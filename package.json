@@ -1,0 +1,10 @@
+{
+  "name": "swagger2dts",
+  "version": "0.0.3",
+  "dependencies": {
+    "axios": "^0.18.0"
+  },
+  "bin": {
+    "swagger2dts": "./cli.js"
+  }
+}
