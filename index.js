@@ -34,7 +34,10 @@ function convertType(swaggerType, swagger) {
     } else if (swaggerType.type === 'array') {
         typespec.elementType = convertType(swaggerType.items);
         typespec.tsType = `Array<${typespec.elementType.target || typespec.elementType.tsType || 'any'}>`;
-    } else /*if (swaggerType.type === 'object')*/ { //remaining types are created as objects
+    } else if (swaggerType.type === 'object') {
+        typespec.tsType = 'object';
+        typespec.isAtomic = true;
+    } else { //remaining types are created as objects
         if (swaggerType.minItems >= 0 && swaggerType.hasOwnProperty('title') && !swaggerType.$ref) {
             typespec.tsType = 'any';
         }
@@ -63,6 +66,9 @@ function convertType(swaggerType, swagger) {
                 const propertyType = swaggerType.properties[propertyName];
                 const property = convertType(propertyType);
                 property.name = propertyName;
+                if (Array.isArray(swaggerType.required)) {
+                    property.isNullable = !swaggerType.required.includes(propertyName);
+                }
                 typespec.properties.push(property);
             });
         }
@@ -122,12 +128,19 @@ async function gen(swaggerUrl, output = 'swagger.d.ts') {
 
     const code = definitions.map((def) => {
         const {name, tsType} = def;
-        return `
+        if (tsType.isAtomic) {
+            return `
+export type ${name} = ${tsType2string(tsType)};`;
+        } else {
+            return `
 export interface ${name} {${tsType2string(tsType)}
 }`;
+        }
     }).join('\n');
 
     fs.writeFileSync(output, code);
 }
 
 module.exports = gen;
+
+gen('http://api.doc.sjst.beta.sankuai.com/doc/erp-retail-admin-api/1.1.0-SNAPSHOT/swagger.json');

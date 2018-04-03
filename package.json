@@ -1,6 +1,6 @@
 {
   "name": "swagger2dts",
-  "version": "0.0.3",
+  "version": "0.0.5",
   "dependencies": {
     "axios": "^0.18.0"
   },
