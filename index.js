@@ -142,5 +142,3 @@ export interface ${name} {${tsType2string(tsType)}
 }
 
 module.exports = gen;
-
-gen('http://api.doc.sjst.beta.sankuai.com/doc/erp-retail-admin-api/1.1.0-SNAPSHOT/swagger.json');
